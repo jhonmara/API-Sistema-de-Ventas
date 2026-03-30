@@ -1,4 +1,4 @@
-# 🛒 API de Sistema de Ventas
+# API de Sistema de Ventas
 
 Backend profesional desarrollado con **FastAPI** y **SQLAlchemy** para la gestión de inventarios y productos.
 
@@ -19,5 +19,5 @@ Backend profesional desarrollado con **FastAPI** y **SQLAlchemy** para la gesti�
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/nombre-repo.git
-cd nombre-repo
+git clone [https://github.com/jhonmara/API-Sistema-de-Ventas.git](https://github.com/jhonmara/API-Sistema-de-Ventas.git)
+cd API-Sistema-de-Ventas
