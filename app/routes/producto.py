@@ -4,11 +4,14 @@ from ..database import get_db
 from ..models.producto import Producto
 from ..schemas.producto import ProductoCreate, ProductoResponse
 from typing import List
+from fastapi.security import OAuth2PasswordBearer
+from app.auth.auth import verificar_token
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/usuarios/login")
 router = APIRouter(prefix="/productos", tags=["Productos"])
 
 @router.post("/", response_model=ProductoResponse)
-def crear_producto(item: ProductoCreate, db: Session = Depends(get_db)):
+def crear_producto(item: ProductoCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     try:
         nuevo_producto = Producto(
             nombre=item.nombre,
@@ -30,7 +33,7 @@ def crear_producto(item: ProductoCreate, db: Session = Depends(get_db)):
         )
     
 @router.get("/", response_model=List[ProductoResponse])
-def obtener_productos(db: Session = Depends(get_db)):
+def obtener_productos(db: Session = Depends(get_db), user: str = Depends(verificar_token)):
     productos = db.query(Producto).all()
     return productos
 
@@ -42,7 +45,12 @@ def obtener_producto(id: int, db: Session = Depends(get_db)):
     return producto
 
 @router.put("/{id}", response_model=ProductoResponse)
-def actualizar_producto(id: int, item: ProductoCreate, db: Session = Depends(get_db)):
+def actualizar_producto(
+    id: int,
+    item: ProductoCreate,
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme)
+):
 
     producto = db.query(Producto).filter(Producto.id == id).first()
 
@@ -61,7 +69,11 @@ def actualizar_producto(id: int, item: ProductoCreate, db: Session = Depends(get
 
 
 @router.delete("/{id}", response_model=ProductoResponse)
-def eliminar_producto(id: int, db: Session = Depends(get_db)):
+def eliminar_producto(
+    id: int,
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme)
+):
     producto = db.query(Producto).filter(Producto.id == id).first()
     if not producto:
         raise HTTPException(status_code=404, detail="Producto no encontrado")

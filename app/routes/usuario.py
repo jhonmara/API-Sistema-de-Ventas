@@ -3,8 +3,12 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.usuario import Usuario
 from app.schemas.usuario import UsuarioCreate, UsuarioResponse
+from passlib.context import CryptContext
+from app.auth.auth import crear_token
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 @router.post("/", response_model=UsuarioResponse)
 def crear_usuario(item: UsuarioCreate, db: Session = Depends(get_db)):
@@ -14,9 +18,11 @@ def crear_usuario(item: UsuarioCreate, db: Session = Depends(get_db)):
     if usuario_existente:
         raise HTTPException(status_code=400, detail="El usuario ya existe")
 
+    password_encriptado = pwd_context.hash(item.password)
+
     nuevo_usuario = Usuario(
         username=item.username,
-        password=item.password
+        password=password_encriptado
     )
 
     db.add(nuevo_usuario)
@@ -24,3 +30,21 @@ def crear_usuario(item: UsuarioCreate, db: Session = Depends(get_db)):
     db.refresh(nuevo_usuario)
 
     return nuevo_usuario
+
+@router.post("/login")
+def login(username: str, password: str, db: Session = Depends(get_db)):
+    
+    user = db.query(Usuario).filter(Usuario.username == username).first()
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Usuario no existe")
+
+    if not pwd_context.verify(password, user.password):
+        raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+
+    token = crear_token({"sub": user.username})
+
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }
