@@ -4,14 +4,12 @@ from ..database import get_db
 from ..models.producto import Producto
 from ..schemas.producto import ProductoCreate, ProductoResponse
 from typing import List
-from fastapi.security import OAuth2PasswordBearer
 from app.auth.auth import verificar_token
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/usuarios/login")
 router = APIRouter(prefix="/productos", tags=["Productos"])
 
 @router.post("/", response_model=ProductoResponse)
-def crear_producto(item: ProductoCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+def crear_producto(item: ProductoCreate, db: Session = Depends(get_db), user: dict = Depends(verificar_token)):
     try:
         nuevo_producto = Producto(
             nombre=item.nombre,
@@ -33,7 +31,7 @@ def crear_producto(item: ProductoCreate, db: Session = Depends(get_db), token: s
         )
     
 @router.get("/", response_model=List[ProductoResponse])
-def obtener_productos(db: Session = Depends(get_db), user: str = Depends(verificar_token)):
+def obtener_productos(db: Session = Depends(get_db)):
     productos = db.query(Producto).all()
     return productos
 
@@ -49,7 +47,7 @@ def actualizar_producto(
     id: int,
     item: ProductoCreate,
     db: Session = Depends(get_db),
-    token: str = Depends(oauth2_scheme)
+    user: dict = Depends(verificar_token)
 ):
 
     producto = db.query(Producto).filter(Producto.id == id).first()
@@ -72,7 +70,7 @@ def actualizar_producto(
 def eliminar_producto(
     id: int,
     db: Session = Depends(get_db),
-    token: str = Depends(oauth2_scheme)
+    user: dict = Depends(verificar_token)
 ):
     producto = db.query(Producto).filter(Producto.id == id).first()
     if not producto:

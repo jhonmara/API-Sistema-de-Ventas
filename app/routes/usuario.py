@@ -5,6 +5,8 @@ from app.models.usuario import Usuario
 from app.schemas.usuario import UsuarioCreate, UsuarioResponse
 from passlib.context import CryptContext
 from app.auth.auth import crear_token
+from fastapi.security import OAuth2PasswordRequestForm
+
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
@@ -32,14 +34,14 @@ def crear_usuario(item: UsuarioCreate, db: Session = Depends(get_db)):
     return nuevo_usuario
 
 @router.post("/login")
-def login(username: str, password: str, db: Session = Depends(get_db)):
-    
-    user = db.query(Usuario).filter(Usuario.username == username).first()
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+
+    user = db.query(Usuario).filter(Usuario.username == form_data.username).first()
 
     if not user:
         raise HTTPException(status_code=401, detail="Usuario no existe")
 
-    if not pwd_context.verify(password, user.password):
+    if not pwd_context.verify(form_data.password, user.password):
         raise HTTPException(status_code=401, detail="Contraseña incorrecta")
 
     token = crear_token({"sub": user.username})
