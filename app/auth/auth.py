@@ -2,8 +2,10 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+import os
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/usuarios/login")
+
 
 def verificar_token(token: str = Depends(oauth2_scheme)):
     try:
@@ -15,7 +17,7 @@ def verificar_token(token: str = Depends(oauth2_scheme)):
             detail="Token inválido"
         )
 
-SECRET_KEY = "asdhj12312kjsdhfkjshdfkjsdhfkjshdf987987"
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
