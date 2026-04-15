@@ -23,15 +23,15 @@ def crear_producto(item: ProductoCreate, db: Session = Depends(get_db), user: di
         db.refresh(nuevo_producto)
         return nuevo_producto
 
-    except Exception:
+    except Exception as e:
         db.rollback()
         raise HTTPException(
-            status_code=500,
-            detail="Error al crear producto"
+           status_code=500,
+           detail=f"Error al crear producto: {str(e)}"
         )
     
 @router.get("/", response_model=List[ProductoResponse])
-def obtener_productos(db: Session = Depends(get_db)):
+def obtener_productos(db: Session = Depends(get_db), user: dict = Depends(verificar_token)):
     productos = db.query(Producto).all()
     return productos
 

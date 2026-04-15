@@ -12,7 +12,7 @@ router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-@router.post("/", response_model=UsuarioResponse)
+@router.post("/", response_model=UsuarioResponse, status_code=201)
 def crear_usuario(item: UsuarioCreate, db: Session = Depends(get_db)):
     
     usuario_existente = db.query(Usuario).filter(Usuario.username == item.username).first()
@@ -33,17 +33,16 @@ def crear_usuario(item: UsuarioCreate, db: Session = Depends(get_db)):
 
     return nuevo_usuario
 
-@router.post("/login")
+@router.post("/login", status_code=200)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
 
     user = db.query(Usuario).filter(Usuario.username == form_data.username).first()
 
-    if not user:
-        raise HTTPException(status_code=401, detail="Usuario no existe")
-
-    if not pwd_context.verify(form_data.password, user.password):
-        raise HTTPException(status_code=401, detail="Contraseña incorrecta")
-
+    if not user or not pwd_context.verify(form_data.password, user.password):
+        raise HTTPException(
+            status_code=401,
+            detail="Credenciales incorrectas"
+        )
     token = crear_token({"sub": user.username})
 
     return {
