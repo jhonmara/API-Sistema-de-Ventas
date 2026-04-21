@@ -13,6 +13,7 @@ PORT = os.getenv("DB_PORT")
 NAME = os.getenv("DB_NAME")
 
 SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{USER}:{PASS}@{HOST}:{PORT}/{NAME}"
+print("DB URL:", SQLALCHEMY_DATABASE_URL)
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 
