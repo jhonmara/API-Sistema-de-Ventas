@@ -26,6 +26,12 @@ API backend desarrollada con **FastAPI** para la gestión de usuarios y producto
 
 ---
 
+### 🛠️ Validaciones y Buenas Prácticas
+Para asegurar la integridad de los datos, implementé validaciones personalizadas con **Pydantic**:
+* **Limpieza de strings:** Uso de validadores para eliminar espacios accidentales en nombres de usuario (`.strip()`).
+* **Restricciones de longitud:** Longitud mínima obligatoria para campos sensibles.
+* **Transformación de datos:** Los modelos de respuesta están configurados con `from_attributes = True` para una integración fluida con el ORM.
+
 ## ⚙️ Configuración del proyecto
 
 ### 1. Crear entorno virtual
