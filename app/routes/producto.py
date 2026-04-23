@@ -11,6 +11,11 @@ router = APIRouter(prefix="/productos", tags=["Productos"])
 @router.post("/", response_model=ProductoResponse, status_code=201)
 def crear_producto(item: ProductoCreate, db: Session = Depends(get_db), user: dict = Depends(verificar_token)):
     try:
+        # 🔥 VALIDACIÓN NUEVA
+        existente = db.query(Producto).filter(Producto.nombre == item.nombre).first()
+        if existente:
+            raise HTTPException(status_code=400, detail="El producto ya existe")
+
         nuevo_producto = Producto(
             nombre=item.nombre,
             descripcion=item.descripcion,
@@ -20,12 +25,7 @@ def crear_producto(item: ProductoCreate, db: Session = Depends(get_db), user: di
         
         db.add(nuevo_producto)
         db.commit()
-        
-
-        try:
-            db.refresh(nuevo_producto)
-        except Exception as refresh_error:
-            print(f"Error en el refresh: {refresh_error}")
+        db.refresh(nuevo_producto)
             
         return nuevo_producto
 
@@ -76,11 +76,11 @@ def actualizar_producto(
         db.rollback()
         raise HTTPException(
             status_code=500,
-            detail=f"Error al actualizar producto: {str(e)}"
+            detail="Error interno del servidor"
         )
 
 
-@router.delete("/{id}", response_model=ProductoResponse, status_code=200)
+@router.delete("/{id}", status_code=204)
 def eliminar_producto(
     id: int,
     db: Session = Depends(get_db),
@@ -95,16 +95,19 @@ def eliminar_producto(
         db.delete(producto)
         db.commit()
 
-        return producto
+        return 
+
+    except HTTPException:
+        raise
 
     except Exception as e:
         db.rollback()
-        print(f"ERROR INTERNO: {str(e)}")  
+        print(f"ERROR INTERNO: {str(e)}")
 
-    raise HTTPException(
-        status_code=500,
-        detail="Error interno del servidor"
-    )
+        raise HTTPException(
+            status_code=500,
+            detail="Error interno del servidor"
+        )
 
 
     

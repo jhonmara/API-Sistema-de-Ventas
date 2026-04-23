@@ -1,41 +1,52 @@
 # 🚀 Sistema de Ventas API
 
-Este es mi proyecto inicial de Backend desarrollado con **FastAPI**. El objetivo es gestionar usuarios y productos, aplicando seguridad con autenticación mediante tokens.
+API backend desarrollada con **FastAPI** para la gestión de usuarios y productos, implementando autenticación segura mediante JWT.
 
 ---
 
-## ✨ Aprendizajes clave
+## 🛠️ Tecnologías utilizadas
 
-En este proyecto apliqué conceptos de:
+- FastAPI
+- MySQL
+- SQLAlchemy
+- Pydantic
+- JWT (Autenticación)
+- Bcrypt (Hash de contraseñas)
 
-* **FastAPI**: Creación de rutas y documentación automática.
-* **SQLAlchemy**: Manejo de base de datos MySQL mediante un ORM.
-* **Seguridad**: Hashing de contraseñas con Bcrypt y autenticación con JWT.
-* **Pydantic**: Validación de esquemas de datos.
+---
+
+## ✨ Funcionalidades
+
+- Registro y login de usuarios
+- Autenticación con tokens JWT
+- CRUD completo de productos
+- Protección de rutas
+- Validación de datos
+- Manejo de errores
 
 ---
 
 ## ⚙️ Configuración del proyecto
 
-1. **Crear entorno virtual:**
+### 1. Crear entorno virtual
 
 ```bash
 python -m venv venv
 ```
 
-2. **Activar entorno virtual:**
+### 2. Activar entorno
 
 ```bash
 venv\Scripts\activate
 ```
 
-3. **Instalar dependencias:**
+### 3. Instalar dependencias
 
 ```bash
 pip install -r requirements.txt
 ```
 
-4. **Configurar variables de entorno (.env):**
+### 4. Configurar variables de entorno (.env)
 
 ```env
 DB_USER=root
@@ -46,54 +57,32 @@ DB_NAME=ventas
 SECRET_KEY=clave_super_segura
 ```
 
-5. **Ejecutar el servidor:**
+### 5. Ejecutar servidor
 
 ```bash
 uvicorn app.main:app --reload
 ```
-
----
-
 ## 🔐 Autenticación
 
-Para usar los endpoints protegidos:
+Para consumir endpoints protegidos:
 
 1. Crear usuario en `/usuarios`
-2. Hacer login en `/usuarios/login`
+2. Iniciar sesión en `/usuarios/login`
 3. Copiar el `access_token`
 4. Ir a `/docs`
-5. Dar clic en **Authorize**
-6. Escribir:
-
-```
-Bearer TU_TOKEN
-```
-
+5. Clic en **Authorize**
+6. Escribir: Bearer TU_TOKEN
 ---
 
 ## 📌 Endpoints principales
 
 ### Usuarios
-
-* POST `/usuarios`
-* POST `/usuarios/login`
+- POST `/usuarios`
+- POST `/usuarios/login`
 
 ### Productos
-
-* GET `/productos`
-* GET `/productos/{id}`
-* POST `/productos`
-* PUT `/productos/{id}`
-* DELETE `/productos/{id}`
-
----
-
-## 🧠 Nota
-
-Este proyecto forma parte de mi aprendizaje en desarrollo backend. Actualmente estoy mejorando mis conocimientos en APIs y buenas prácticas.
-
----
-
-## 👨‍💻 Autor
-
-Juan Manuel Maya
+- GET `/productos`
+- GET `/productos/{id}`
+- POST `/productos`
+- PUT `/productos/{id}`
+- DELETE `/productos/{id}`
