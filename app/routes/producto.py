@@ -62,7 +62,25 @@ def actualizar_producto(
         producto = db.query(Producto).filter(Producto.id == id).first()
 
         if not producto:
-            raise HTTPException(status_code=404, detail="Producto no encontrado")
+            raise HTTPException(
+                status_code=404,
+                detail="Producto no encontrado"
+            )
+
+        producto_existente = (
+            db.query(Producto)
+            .filter(
+                Producto.nombre == item.nombre,
+                Producto.id != id
+            )
+            .first()
+        )
+
+        if producto_existente:
+            raise HTTPException(
+                status_code=400,
+                detail="Ya existe otro producto con ese nombre"
+            )
 
         producto.nombre = item.nombre
         producto.descripcion = item.descripcion
@@ -80,9 +98,10 @@ def actualizar_producto(
     except Exception as e:
         db.rollback()
         print(f"ERROR DE SISTEMA: {str(e)}")
+
         raise HTTPException(
-           status_code=500,
-           detail="Error interno del servidor"
+            status_code=500,
+            detail="Error interno del servidor"
         )
 
 
