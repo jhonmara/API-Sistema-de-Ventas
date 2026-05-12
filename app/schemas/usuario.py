@@ -1,9 +1,9 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 class UsuarioCreate(BaseModel):
     username: str = Field(..., min_length=3)
     password: str
-    @validator('username')
+    @field_validator('username')
     def username_must_not_have_spaces(cls, v):
         return v.strip()
 

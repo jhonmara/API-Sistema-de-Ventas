@@ -1,21 +1,25 @@
 import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
+from app.core.config import settings
 
 load_dotenv()
 
-USER = os.getenv("DB_USER")
-PASS = os.getenv("DB_PASSWORD")
-HOST = os.getenv("DB_HOST")
-PORT = os.getenv("DB_PORT")
-NAME = os.getenv("DB_NAME")
+USER = settings.DB_USER
+PASS = settings.DB_PASSWORD
+HOST = settings.DB_HOST
+PORT = settings.DB_PORT
+NAME = settings.DB_NAME
 
 SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{USER}:{PASS}@{HOST}:{PORT}/{NAME}"
-print("DB URL:", SQLALCHEMY_DATABASE_URL)
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
+print("✅ Base de datos configurada")
+
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    pool_pre_ping=True
+)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
